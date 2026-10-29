@@ -14,6 +14,8 @@ import {
   AlertTriangle,
   CheckCircle2,
   X,
+  Crown,
+  KeyRound,
 } from 'lucide-react';
 import { usePOS } from '../context/POSContext';
 
@@ -40,9 +42,14 @@ export const Header: React.FC<HeaderProps> = ({ onOpenAccessibility }) => {
     setSoundEnabled,
     activeStaff,
     currentRole,
+    switchStaffRole,
+    managerPin,
   } = usePOS();
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+  const [pinInput, setPinInput] = useState('');
+  const [pinError, setPinError] = useState('');
   const notifRef = useRef<HTMLDivElement>(null);
 
   // Close notifications on outside click
@@ -63,15 +70,36 @@ export const Header: React.FC<HeaderProps> = ({ onOpenAccessibility }) => {
         <h2 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight flex items-center gap-2">
           <span>{currentRole === 'manager' ? `Halo, ${activeStaff.name}` : `Hey ${activeStaff.name}`}</span>
           <span>👋</span>
-          <span
-            className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+          <button
+            type="button"
+            onClick={() => {
+              if (currentRole === 'manager') {
+                switchStaffRole('cashier');
+              } else {
+                setPinInput('');
+                setPinError('');
+                setIsRoleModalOpen(true);
+              }
+            }}
+            title={
               currentRole === 'manager'
-                ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
-                : 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300'
+                ? 'Manager Aktif • Klik untuk beralih ke Kasir'
+                : 'Kasir Aktif • Klik untuk buka hak akses Manager (PIN: 1234)'
+            }
+            className={`text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer border ${
+              currentRole === 'manager'
+                ? 'bg-amber-100 hover:bg-amber-200 text-amber-800 border-amber-300 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-700'
+                : 'bg-purple-100 hover:bg-purple-200 text-purple-800 border-purple-300 dark:bg-purple-950 dark:text-purple-300 dark:border-purple-700'
             }`}
           >
-            {currentRole === 'manager' ? 'Manager' : 'Kasir'}
-          </span>
+            {currentRole === 'manager' ? (
+              <Crown className="w-3 h-3 text-amber-600" />
+            ) : (
+              <KeyRound className="w-3 h-3 text-purple-600" />
+            )}
+            <span>{currentRole === 'manager' ? 'Manager' : 'Kasir'}</span>
+            <span className="text-[10px] opacity-60">⇄</span>
+          </button>
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-400">
           {currentRole === 'manager'
@@ -260,6 +288,87 @@ export const Header: React.FC<HeaderProps> = ({ onOpenAccessibility }) => {
           />
         </div>
       </div>
+
+      {/* Role Switch PIN Modal */}
+      {isRoleModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-sm shadow-2xl border border-purple-200 dark:border-slate-800 p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-950/80 flex items-center justify-center text-amber-600">
+                <Crown className="w-5 h-5" />
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsRoleModalOpen(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-full cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div>
+              <h3 className="font-bold text-base text-slate-900 dark:text-white">
+                Buka Akses Mode Manager
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Masukkan PIN Manager untuk mengaktifkan akses penuh (termasuk fitur CRUD Stok Barang).
+              </p>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const res = switchStaffRole('manager', undefined, pinInput);
+                if (!res.success) {
+                  setPinError(res.message);
+                } else {
+                  setIsRoleModalOpen(false);
+                  setPinInput('');
+                  setPinError('');
+                }
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <input
+                  type="password"
+                  maxLength={6}
+                  autoFocus
+                  value={pinInput}
+                  onChange={(e) => {
+                    setPinInput(e.target.value);
+                    setPinError('');
+                  }}
+                  placeholder="PIN Manager (Default: 1234)"
+                  className="w-full px-4 py-2.5 text-center text-lg tracking-widest bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-purple-500 font-mono text-slate-900 dark:text-white"
+                />
+                {pinError && (
+                  <p className="text-xs text-rose-500 font-medium mt-1.5">{pinError}</p>
+                )}
+                <p className="text-[11px] text-slate-400 mt-1">
+                  💡 Tips: PIN default sistem adalah <span className="font-mono font-bold text-amber-600">1234</span>
+                </p>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsRoleModalOpen(false)}
+                  className="flex-1 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold cursor-pointer"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black rounded-xl text-xs shadow-md shadow-amber-500/20 cursor-pointer"
+                >
+                  Konfirmasi PIN
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

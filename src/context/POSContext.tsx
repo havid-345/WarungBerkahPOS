@@ -36,6 +36,7 @@ interface POSContextType {
   addProduct: (product: Omit<Product, 'id' | 'soldCount'>) => void;
   updateProductStock: (productId: string, newStock: number, reason?: string) => void;
   editProduct: (product: Product) => void;
+  deleteProduct: (productId: string) => { success: boolean; message: string };
 
   // Cart
   cart: CartItem[];
@@ -491,7 +492,37 @@ export const POSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const editProduct = useCallback((updated: Product) => {
     setProducts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
-  }, []);
+    setCart((prev) =>
+      prev.map((item) =>
+        item.product.id === updated.id ? { ...item, product: updated } : item
+      )
+    );
+    addNotification({
+      title: 'Produk Diperbarui',
+      message: `Data produk "${updated.name}" berhasil diperbarui oleh Manager.`,
+      type: 'sync',
+      severity: 'success',
+    });
+  }, [addNotification]);
+
+  const deleteProduct = useCallback((productId: string): { success: boolean; message: string } => {
+    const target = products.find((p) => p.id === productId);
+    if (!target) {
+      return { success: false, message: 'Produk tidak ditemukan di inventaris.' };
+    }
+
+    setProducts((prev) => prev.filter((p) => p.id !== productId));
+    setCart((prev) => prev.filter((item) => item.product.id !== productId));
+
+    addNotification({
+      title: 'Produk Dihapus',
+      message: `"${target.name}" (${target.barcode}) telah dihapus dari inventaris toko.`,
+      type: 'sync',
+      severity: 'warning',
+    });
+
+    return { success: true, message: `Produk "${target.name}" berhasil dihapus.` };
+  }, [products, addNotification]);
 
   const adjustRegisterBalance = useCallback((amount: number, reason: string) => {
     setRegisterBalance((prev) => prev + amount);
@@ -793,6 +824,7 @@ export const POSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addProduct,
         updateProductStock,
         editProduct,
+        deleteProduct,
         cart,
         addToCart,
         removeFromCart,
