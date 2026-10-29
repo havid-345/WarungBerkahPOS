@@ -954,15 +954,26 @@ export const InventoryView: React.FC = () => {
               {/* Image URL & Presets */}
               <div>
                 <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">
-                  URL Foto Produk
+                  Foto Produk <span className="text-slate-400 font-normal">(Opsional)</span>
                 </label>
-                <input
-                  type="url"
-                  value={formImageUrl}
-                  onChange={(e) => setFormImageUrl(e.target.value)}
-                  placeholder="https://..."
-                  className="w-full px-3 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none font-mono text-[11px]"
-                />
+                <div className="flex items-center gap-2.5">
+                  <img
+                    src={formImageUrl || '/assets/sabun_lifebuoy.jpg'}
+                    alt="Preview"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '/assets/sabun_lifebuoy.jpg';
+                    }}
+                    className="w-10 h-10 rounded-xl object-cover bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shrink-0"
+                  />
+                  <input
+                    type="text"
+                    value={formImageUrl}
+                    onChange={(e) => setFormImageUrl(e.target.value)}
+                    placeholder="URL atau path foto (opsional)"
+                    className="flex-1 px-3 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none font-mono text-[11px]"
+                  />
+                </div>
                 <div className="flex items-center gap-1.5 mt-1.5 overflow-x-auto pb-1">
                   <span className="text-[10px] text-slate-400 shrink-0">Preset Cepat:</span>
                   {presetImages.map((img) => (
@@ -1167,17 +1178,43 @@ export const InventoryView: React.FC = () => {
                 />
               </div>
 
-              {/* Image URL */}
+              {/* Image URL & Current Photo Preview */}
               <div>
-                <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">
-                  URL Foto Produk
-                </label>
-                <input
-                  type="url"
-                  value={formImageUrl}
-                  onChange={(e) => setFormImageUrl(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none font-mono text-[11px]"
-                />
+                <div className="flex items-center justify-between mb-1">
+                  <label className="font-bold text-slate-700 dark:text-slate-300">
+                    Foto Produk <span className="text-slate-400 font-normal">(Opsional - foto lama otomatis dipertahankan)</span>
+                  </label>
+                  {formImageUrl && editingProduct && formImageUrl !== editingProduct.imageUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setFormImageUrl(editingProduct.imageUrl)}
+                      className="text-[10px] text-purple-600 dark:text-purple-400 hover:underline cursor-pointer"
+                    >
+                      Reset ke Foto Awal
+                    </button>
+                  )}
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <img
+                    src={formImageUrl || editingProduct?.imageUrl || '/assets/sabun_lifebuoy.jpg'}
+                    alt="Preview"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '/assets/sabun_lifebuoy.jpg';
+                    }}
+                    className="w-10 h-10 rounded-xl object-cover bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shrink-0"
+                  />
+                  <input
+                    type="text"
+                    value={formImageUrl}
+                    onChange={(e) => setFormImageUrl(e.target.value)}
+                    placeholder="URL atau path foto (tidak wajib diubah)"
+                    className="flex-1 px-3 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none font-mono text-[11px]"
+                  />
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">
+                  ✓ Anda cukup mengganti nama produk. Foto produk akan tetap tersimpan seperti semula.
+                </p>
               </div>
 
               <div>
