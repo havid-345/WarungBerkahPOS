@@ -1,0 +1,6 @@
+{
+  "name": "Warung Berkah POS - Kasir Toko Kelontong Modern",
+  "description": "Sistem kasir toko kelontong modern dengan manajemen stok, laporan penjualan harian & analitik grafik, barcode scanner, manajemen diskon, sinkronisasi cloud real-time, enkripsi data, dan mode offline.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
