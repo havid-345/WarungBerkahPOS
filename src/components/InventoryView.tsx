@@ -273,6 +273,10 @@ export const InventoryView: React.FC = () => {
                         <img
                           src={p.imageUrl}
                           alt={p.name}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = '/assets/sabun_lifebuoy.jpg';
+                          }}
                           className="w-9 h-9 rounded-lg object-cover bg-slate-200 shrink-0"
                         />
                         <div>

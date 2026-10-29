@@ -150,7 +150,18 @@ export const POSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY_PRODUCTS);
       if (saved) {
-        try { return JSON.parse(saved); } catch { /* ignore */ }
+        try {
+          const parsed = JSON.parse(saved);
+          return parsed.map((p: Product) => {
+            if (p.id === 'prod-11') {
+              return { ...p, imageUrl: '/assets/sabun_lifebuoy.jpg' };
+            }
+            if (p.id === 'prod-3' && p.imageUrl && p.imageUrl.includes('photo-1581441363689')) {
+              return { ...p, imageUrl: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=500&auto=format&fit=crop&q=80' };
+            }
+            return p;
+          });
+        } catch { /* ignore */ }
       }
     }
     return INITIAL_PRODUCTS;

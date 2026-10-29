@@ -178,7 +178,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     minStockAlert: 10,
     unit: 'batang',
     barcode: '899123456011',
-    imageUrl: 'https://images.unsplash.com/photo-1607006314144-884639912a76?w=500&auto=format&fit=crop&q=80',
+    imageUrl: '/assets/sabun_lifebuoy.jpg',
     rating: 4.6,
     soldCount: 240,
     description: 'Perlindungan kuman terbaik untuk seluruh keluarga',

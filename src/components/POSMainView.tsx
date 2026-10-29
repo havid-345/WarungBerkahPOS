@@ -180,6 +180,10 @@ export const POSMainView: React.FC = () => {
                       <img
                         src={prod.imageUrl}
                         alt={prod.name}
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = '/assets/sabun_lifebuoy.jpg';
+                        }}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         loading="lazy"
                       />
