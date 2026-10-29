@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+/* Smooth transition between light and dark modes */
+html, body {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}

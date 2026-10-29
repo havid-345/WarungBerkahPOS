@@ -27,6 +27,7 @@ const POSDashboard: React.FC = () => {
     cart,
     products,
     addToCart,
+    isDarkMode,
   } = usePOS();
 
   // Modals state
@@ -94,7 +95,7 @@ const POSDashboard: React.FC = () => {
 
   return (
     <div
-      className={`min-h-screen bg-[#ede9fe] dark:bg-slate-950 p-2 sm:p-4 lg:p-6 flex items-center justify-center font-sans antialiased selection:bg-purple-500 selection:text-white transition-colors duration-200 ${
+      className={`${isDarkMode ? 'dark ' : ''}min-h-screen bg-[#ede9fe] dark:bg-slate-950 p-2 sm:p-4 lg:p-6 flex items-center justify-center font-sans antialiased selection:bg-purple-500 selection:text-white transition-colors duration-200 ${
         highContrast ? 'contrast-125' : ''
       }`}
     >

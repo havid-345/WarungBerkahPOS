@@ -269,10 +269,16 @@ export const POSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY_DARKMODE, JSON.stringify(isDarkMode));
+    const root = document.documentElement;
+    const body = document.body;
     if (isDarkMode) {
-      document.documentElement.classList.add('dark');
+      root.classList.add('dark');
+      body?.classList.add('dark');
+      root.setAttribute('data-theme', 'dark');
     } else {
-      document.documentElement.classList.remove('dark');
+      root.classList.remove('dark');
+      body?.classList.remove('dark');
+      root.setAttribute('data-theme', 'light');
     }
   }, [isDarkMode]);
 

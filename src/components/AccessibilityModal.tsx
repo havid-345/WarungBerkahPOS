@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, SlidersHorizontal, Eye, Keyboard, Type } from 'lucide-react';
+import { X, SlidersHorizontal, Eye, Keyboard, Type, Moon, Sun } from 'lucide-react';
 import { usePOS } from '../context/POSContext';
 
 interface AccessibilityModalProps {
@@ -7,7 +7,14 @@ interface AccessibilityModalProps {
 }
 
 export const AccessibilityModal: React.FC<AccessibilityModalProps> = ({ onClose }) => {
-  const { fontSize, setFontSize, highContrast, setHighContrast } = usePOS();
+  const {
+    fontSize,
+    setFontSize,
+    highContrast,
+    setHighContrast,
+    isDarkMode,
+    setIsDarkMode,
+  } = usePOS();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
@@ -73,6 +80,32 @@ export const AccessibilityModal: React.FC<AccessibilityModalProps> = ({ onClose 
             />
             <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#582be8]"></div>
           </label>
+        </div>
+
+        {/* Theme Mode toggle */}
+        <div className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-2.5">
+            {isDarkMode ? <Moon className="w-4 h-4 text-amber-400" /> : <Sun className="w-4 h-4 text-amber-500" />}
+            <div>
+              <div className="text-xs font-bold text-slate-800 dark:text-white">
+                {isDarkMode ? 'Mode Gelap Aktif' : 'Mode Terang Aktif'}
+              </div>
+              <div className="text-[11px] text-slate-400">
+                Klik tombol untuk mengubah tampilan
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+              !isDarkMode
+                ? 'bg-amber-100 text-amber-800 border-amber-300 shadow-sm'
+                : 'bg-slate-700 text-amber-300 border-slate-600 shadow-sm'
+            }`}
+          >
+            {isDarkMode ? 'Ganti ke Terang ☀️' : 'Ganti ke Gelap 🌙'}
+          </button>
         </div>
 
         {/* Keyboard Shortcuts Cheat Sheet */}
