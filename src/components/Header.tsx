@@ -38,6 +38,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenAccessibility }) => {
     setIsDarkMode,
     soundEnabled,
     setSoundEnabled,
+    activeStaff,
+    currentRole,
   } = usePOS();
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -56,13 +58,25 @@ export const Header: React.FC<HeaderProps> = ({ onOpenAccessibility }) => {
 
   return (
     <header className="flex items-center justify-between gap-4 px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 transition-colors">
-      {/* Left: Greeting matching reference "Hey Samantha" */}
+      {/* Left: Dynamic Greeting matching active role */}
       <div>
         <h2 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight flex items-center gap-2">
-          Hey Samantha 👋
+          <span>{currentRole === 'manager' ? `Halo, ${activeStaff.name}` : `Hey ${activeStaff.name}`}</span>
+          <span>👋</span>
+          <span
+            className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+              currentRole === 'manager'
+                ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                : 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300'
+            }`}
+          >
+            {currentRole === 'manager' ? 'Manager' : 'Kasir'}
+          </span>
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          Kasir Toko Kelontong • Siap melayani pelanggan hari ini
+          {currentRole === 'manager'
+            ? 'Akses Pemilik Toko • Kontrol Penuh Stok & Keuangan'
+            : 'Kasir Toko Kelontong • Siap melayani transaksi pelanggan'}
         </p>
       </div>
 
@@ -235,11 +249,11 @@ export const Header: React.FC<HeaderProps> = ({ onOpenAccessibility }) => {
           )}
         </div>
 
-        {/* Cashier Profile Avatar matching reference */}
+        {/* Cashier / Manager Profile Avatar matching reference */}
         <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">
           <img
-            src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80"
-            alt="Samantha Kasir"
+            src={activeStaff.avatar}
+            alt={activeStaff.name}
             className="w-9 h-9 rounded-full object-cover ring-2 ring-purple-500/30"
           />
         </div>

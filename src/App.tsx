@@ -122,13 +122,8 @@ const POSDashboard: React.FC = () => {
             </main>
           </div>
 
-          {/* 3. Right Cart Sidebar matching reference image (shown on POS tab) */}
-          {activeTab === 'pos' && (
-            <CartSidebar
-              onOpenCashAdjustment={(type) => setCashAdjustmentType(type)}
-              onOpenMemberSelect={() => setIsMemberModalOpen(true)}
-            />
-          )}
+          {/* 3. Right Cart Sidebar with Role Switcher & Order Menu (shown on POS tab) */}
+          {activeTab === 'pos' && <CartSidebar />}
         </div>
       </div>
 

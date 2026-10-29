@@ -78,6 +78,16 @@ export interface PushNotification {
   severity: 'info' | 'warning' | 'danger' | 'success';
 }
 
+export type UserRole = 'manager' | 'cashier';
+
+export interface StaffUser {
+  id: string;
+  name: string;
+  role: UserRole;
+  shift: string;
+  avatar: string;
+}
+
 export type ActiveTab = 
   | 'pos'
   | 'inventory'
@@ -86,3 +96,4 @@ export type ActiveTab =
   | 'discounts'
   | 'security'
   | 'settings';
+

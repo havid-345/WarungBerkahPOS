@@ -7,12 +7,15 @@ import {
   Transaction,
   PushNotification,
   ActiveTab,
+  UserRole,
+  StaffUser,
 } from '../types/pos';
 import {
   INITIAL_PRODUCTS,
   INITIAL_CUSTOMERS,
   INITIAL_COUPONS,
   INITIAL_TRANSACTIONS,
+  INITIAL_STAFF,
 } from '../data/initialData';
 import { calculateCartTotals } from '../utils/calculations';
 import { sounds } from '../utils/sound';
@@ -93,6 +96,14 @@ interface POSContextType {
   setIsCheckoutModalOpen: (val: boolean) => void;
   recentCompletedTransaction: Transaction | null;
   setRecentCompletedTransaction: (trx: Transaction | null) => void;
+
+  // Staff Role & Access Control
+  currentRole: UserRole;
+  activeStaff: StaffUser;
+  staffList: StaffUser[];
+  switchStaffRole: (targetRole: UserRole, targetStaffId?: string, pin?: string) => { success: boolean; message: string };
+  managerPin: string;
+  setManagerPin: (pin: string) => void;
 
   // Security Encryption
   encryptionPassphrase: string;
@@ -184,6 +195,12 @@ export const POSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
     return 12850000; // Starting register balance Rp 12.850.000 (~$12,000 style in image)
   });
+
+  // Staff Role & Access Control
+  const [staffList, setStaffList] = useState<StaffUser[]>(INITIAL_STAFF);
+  const [currentRole, setCurrentRole] = useState<UserRole>('cashier');
+  const [activeStaff, setActiveStaff] = useState<StaffUser>(INITIAL_STAFF[0]);
+  const [managerPin, setManagerPin] = useState<string>('1234');
 
   // Cart & Active Selection
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -469,6 +486,53 @@ export const POSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   }, [addNotification]);
 
+  // Staff role switching function
+  const switchStaffRole = useCallback(
+    (targetRole: UserRole, targetStaffId?: string, pin?: string): { success: boolean; message: string } => {
+      // If switching to manager from cashier, verify PIN
+      if (targetRole === 'manager' && currentRole !== 'manager') {
+        if (pin !== undefined && pin.trim() !== managerPin) {
+          return {
+            success: false,
+            message: 'PIN Manager salah! Silakan coba lagi (PIN default: 1234).',
+          };
+        }
+      }
+
+      const selectedStaff =
+        (targetStaffId ? staffList.find((s) => s.id === targetStaffId) : null) ||
+        staffList.find((s) => s.role === targetRole) ||
+        {
+          id: `staff-${targetRole}`,
+          name: targetRole === 'manager' ? 'Budi Santoso' : 'Samantha',
+          role: targetRole,
+          shift: targetRole === 'manager' ? 'Pemilik Toko (Full Access)' : 'Shift Pagi (Kasir Aktif)',
+          avatar:
+            targetRole === 'manager'
+              ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80'
+              : 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80',
+        };
+
+      setCurrentRole(targetRole);
+      setActiveStaff(selectedStaff);
+
+      addNotification({
+        title: 'Hak Akses Berhasil Diubah',
+        message: `Mode akses diubah ke: ${
+          targetRole === 'manager' ? 'MANAGER (Akses Penuh)' : 'PEGAWAI / KASIR (Operasional)'
+        }. Operator aktif: ${selectedStaff.name}.`,
+        type: 'security',
+        severity: 'info',
+      });
+
+      return {
+        success: true,
+        message: `Berhasil beralih ke hak akses ${targetRole === 'manager' ? 'Manager' : 'Pegawai / Kasir'}.`,
+      };
+    },
+    [currentRole, managerPin, staffList, addNotification]
+  );
+
   // Checkout transaction
   const completeCheckout = useCallback(
     (paymentMethod: Transaction['paymentMethod'], cashPaid?: number) => {
@@ -510,7 +574,7 @@ export const POSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         cashPaid: actualPaid,
         cashChange,
         customer: activeCustomer || undefined,
-        cashierName: 'Samantha (Kasir)',
+        cashierName: `${activeStaff.name} (${activeStaff.role === 'manager' ? 'Manager' : 'Kasir'})`,
         syncedToCloud: !isOfflineMode,
       };
 
@@ -759,6 +823,12 @@ export const POSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setEncryptionPassphrase,
         exportEncryptedVault,
         importEncryptedVault,
+        currentRole,
+        activeStaff,
+        staffList,
+        switchStaffRole,
+        managerPin,
+        setManagerPin,
       }}
     >
       {children}

@@ -1,4 +1,21 @@
-import { Coupon, Customer, Product, Transaction } from '../types/pos';
+import { Coupon, Customer, Product, Transaction, StaffUser } from '../types/pos';
+
+export const INITIAL_STAFF: StaffUser[] = [
+  {
+    id: 'staff-1',
+    name: 'Samantha',
+    role: 'cashier',
+    shift: 'Shift Pagi (Kasir Aktif)',
+    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80',
+  },
+  {
+    id: 'staff-2',
+    name: 'Budi Santoso',
+    role: 'manager',
+    shift: 'Pemilik Toko (Full Access)',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
+  },
+];
 
 export const INITIAL_PRODUCTS: Product[] = [
   {
